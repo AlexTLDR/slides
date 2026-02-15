@@ -18,7 +18,7 @@ margin = 0.2
 
   <a href="/hello-stuttgart/" style="text-decoration: none; color: white; background-color: #006666; padding: 30px 60px; border-radius: 15px; font-size: 1.8em; font-weight: bold; transition: all 0.3s ease; display: block; min-width: 500px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
     👋 Hello Stuttgart
-    <div style="font-size: 0.5em; font-weight: normal; margin-top: 10px; opacity: 0.9;">Welcome to the Stuttgart Gophers Community</div>
+    <div style="font-size: 0.5em; font-weight: normal; margin-top: 10px; opacity: 0.9;">An intro to Go</div>
   </a>
 </div>
 

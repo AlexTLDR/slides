@@ -1,7 +1,8 @@
-baseURL = 'https://pizzaslides.alextldr.com/'
+baseURL = 'https://slides.alextldr.com/'
 languageCode = 'en-us'
 title = 'AlexTLDR Presentations'
 theme = ["github.com/joshed-io/reveal-hugo"]
+
 [markup.goldmark.renderer]
 unsafe = true
 
