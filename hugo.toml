@@ -1,6 +1,6 @@
 baseURL = 'https://pizzaslides.alextldr.com/'
 languageCode = 'en-us'
-title = 'Pizzeria Hugo Slides'
+title = 'AlexTLDR Presentations'
 theme = ["github.com/joshed-io/reveal-hugo"]
 [markup.goldmark.renderer]
 unsafe = true
