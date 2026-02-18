@@ -91,8 +91,80 @@ go mod init learngo-pockets/hello
                     {{< /highlight >}}
       </div>
     </li>
-    <li class="fragment">The module name is also the name of the executable file that is created when we run the `go build` command</li>
   </ul>
 </div>
 
+---
+
 # Going beyond Hello World
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Let's run the code:
+      <div class="fragment">
+        {{< highlight bash >}}
+go run main.go
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">Expected result:
+      <div class="fragment">
+        {{< highlight bash >}}
+$> go run main.go
+Hello world
+        {{< /highlight >}}
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+---
+
+# Understanding the code
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Every Go file begins with the name of its package, in this case, main. Packages are Go’s way of
+     organizing code, similar to modules or libraries in other languages.
+    </li>
+    <li class="fragment">The main package is a bit particular, for two reasons. First, it doesn’t respect Go’s convention
+    of naming the package after its directory (or the other way around). Second, this is how the compiler knows the
+    special function called main() will be found here. The main() function is what will be executed when the program is run.
+    </li>
+    <li class="fragment">After the package’s name, next comes the list of required imports this file will use.
+    Imported packages are composed of standard library packages and third-party libraries:
+          <div class="fragment">
+                    {{< highlight go >}}
+            import "fmt"
+                    {{< /highlight >}}
+          </div>
+    </li>
+  </ul>
+</div>
+
+---
+
+# Understanding the code
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Most Go programs rely on external dependencies. A single Go file, without the help of imported
+    packages, can only handle a limited set of tools.
+    <br>
+    <br>
+    To use features in such external dependencies, we need to import the package where they reside via the import keyword,
+    which provides visibility of the functions and variables in a specific package somewhere else.
+    </li>
+    <li class="fragment">Finally, we have the main() function itself. It doesn’t take any argument and doesn’t return
+    anything. Go is a simple language:
+          <div class="fragment">
+                    {{< highlight go >}}
+func main() {
+    fmt.Println("Hello world")
+}
+                    {{< /highlight >}}
+          </div>
+    </li>
+  </ul>
+</div>
