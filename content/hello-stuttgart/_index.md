@@ -168,3 +168,117 @@ func main() {
     </li>
   </ul>
 </div>
+
+---
+
+# A capital question
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">You might wonder why Println starts with an uppercase letter. The whole story about scope and visibility is explained below</li>
+    <li class="fragment">Any symbol starting with a capital letter is exposed to external users of the package</li>
+    <li class="fragment">Anything else isn’t accessible from outside the package. Common examples of unexposed names
+        include those starting with a lowercase letter and those starting with an underscore
+    </li>
+    <li class="fragment">This applies to variables, constants, functions, and types</li>
+    <li class="fragment">The Println function starts with a capital letter so that we can use it from outside the package</li>
+  </ul>
+</div>
+
+---
+
+# Testing: Example vs. test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">While Go functions usually return values, very few write specifically to the standard output. 
+    The test strategy that we’ll implement here is only necessary when checking the standard output, which means it 
+    won’t be the default approach for the rest of the code. However, because this is our first function and we want to 
+    test it, this is the easy way. We’ll see more about test functions shortly.</li>
+    <li class="fragment">First, we need a test file. We’ll name the file main_internal_test.go, for the following reasons:
+      <ul>
+        <li class="fragment">main, because the file we test is named main.go.</li>
+        <li class="fragment">internal, because we want to access unexposed methods, a convention that we choose to follow in this book.</li>
+        <li class="fragment">test, because this is a test file. When it comes to building or executing the program, *_test.go files are ignored by the compiler. Only when running tests will *_test.go files be considered.</li>
+      </ul>
+    </li>
+    <li class="fragment">Unlike "normal" tests that usually check return values, this Example test is used specifically
+    to check "standard output" (what is printed to the screen).</li>
+  </ul>
+</div>
+
+---
+
+# Testing: Example vs. test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">The test file should look like this:
+      <div class="fragment">
+        {{< highlight go >}}
+package main
+
+import "testing"
+
+func ExampleHello() {
+    Hello()
+    // Output: Hello world
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">To run the test:
+      <div class="fragment">
+        {{< highlight bash >}}
+go test
+        {{< /highlight >}}
+      </div>
+    </li>
+  </ul>
+</div>
+
+---
+
+# Functions
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">We want some variations, some modularity</li>
+    <li class="fragment">The main function does two distinct things: (1) defines a specific message and (2) prints it.
+    We’ve cobbled everything on a single line in the previous code, but that doesn’t leave any space for adaptations. </li>
+    <li class="fragment">Because we aim to enrich the message, we need some flexibility here.
+    We’ll begin by extracting the message generation into a dedicated greet function. This function returns a string that
+    we can keep in a variable we call greeting</li>
+  </ul>
+</div>
+
+---
+
+# Functions
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">
+      <div class="fragment">
+        {{< highlight go >}}
+package main
+
+import "fmt"
+
+func main() {
+    greeting := greet()
+        fmt.Println(greeting)
+}
+
+// greet returns a greeting to the world.
+func greet() string {
+    // return a simple greeting message
+    return "Hello world"
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+  </ul>
+</div>
+
+---
