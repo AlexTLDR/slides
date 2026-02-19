@@ -968,5 +968,17 @@ func greet(l language) string {
   </ul>
 </div>
 
+---
+
 # Q & A
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Link to the book</li>
+    <li class="fragment">https://www.manning.com/books/learn-go-with-pocket-sized-projectse</li>
+    <li class="fragment">
+      <img src="/img/hello-stuttgart/book-qr-code.png" alt="Book QR Code" style="max-width: 400px; width: 100%; margin-top: 20px;">
+    </li>
+  </ul>
+</div>
 
