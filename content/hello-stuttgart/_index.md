@@ -977,7 +977,16 @@ func greet(l language) string {
     <li class="fragment">Link to the book</li>
     <li class="fragment">https://www.manning.com/books/learn-go-with-pocket-sized-projectse</li>
     <li class="fragment">
-      <img src="/img/hello-stuttgart/book-qr-code.png" alt="Book QR Code" style="max-width: 400px; width: 100%; margin-top: 20px;">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 150px; margin-top: 40px;">
+        <div style="text-align: center;">
+          <p style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Book</p>
+          <img src="/img/hello-stuttgart/book-qr-code.png" alt="Book QR Code" style="max-width: 400px; width: 100%;">
+        </div>
+        <div style="text-align: center;">
+          <p style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Slides</p>
+          <img src="/img/hello-stuttgart/slides-qr-code.png" alt="Slides QR Code" style="max-width: 400px; width: 100%;">
+        </div>
+      </div>
     </li>
   </ul>
 </div>
