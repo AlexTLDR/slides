@@ -532,3 +532,156 @@ switch l {
     this doesn't affect us here, but it's a handy feature to remember</li>
   </ul>
 </div>
+
+---
+
+# Let's adapt the tests
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Previously, the greet function accepted no parameter. It now takes one, which means we broke the
+    contract we had with the users of our code. Well, for now, the only user is a test, so we can change it.
+    We now want to test the greet function with various inputs.</li>
+    <li class="fragment">We’ll make a call to the greet function by passing the desired input language and storing the output in a variable,
+    so we can verify it. The preparation phase now contains two variables: the desired language and the expected greeting message.</li>
+    <li class="fragment">Let’s use a new convention of the testing package: when testing a function with two (or more) different scenarios,
+    we can write several functions, Test<FunctionName>_{ScenarioName}. The full test file now looks like the following listing.</li>
+  </ul>
+</div>
+
+---
+
+<div class="responsive-container">
+  <div class="fragment">
+    <div style="max-height: 60vh; overflow-y: auto; overflow-x: hidden; border-radius: 8px;">
+      {{< highlight go >}}
+package main
+
+import "testing"
+
+func ExampleMain() {
+    ...
+}
+
+func TestGreet_English(t *testing.T) {
+    lang := language("en")
+    want := "Hello world"
+
+    got := greet(lang)
+
+    if got != want {
+        // mark this test as failed
+        t.Errorf("expected: %q, got: %q", want, got)
+    }
+}
+
+func TestGreet_French(t *testing.T) {
+    lang := language("fr")
+    want := "Bonjour le monde"
+
+    got := greet(lang)
+
+    if got != want {
+        // mark this test as failed
+        t.Errorf("expected: %q, got: %q", want, got)
+    }
+}
+
+func TestGreet_Akkadian(t *testing.T) {
+    // Akkadian is not implemented yet!
+    lang := language("akk")
+    want := ""
+
+    got := greet(lang)
+
+    if got != want {
+        // mark this test as failed
+        t.Errorf("expected: %q, got: %q", want, got)
+    }
+}
+      {{< /highlight >}}
+    </div>
+  </div>
+</div>
+
+---
+
+# Let's adapt the tests
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">As you can see, the TestGreet_English function is in charge of testing the English greeting,
+    while the TestGreet_French function tests the French message. While this approach is interesting and worth remembering,
+    you probably noticed that, in our case, there’s no real change between the English and the French scenarios.
+    Only the preparation step differs—only slightly. The next section will improve on this. To run the tests, simply run your new favorite go test command. </li>
+    <li class="fragment">As you’ve noticed, we’ve added another function to test a language unknown to the program.
+    Testing isn’t always about making sure the “good” inputs provide “good” results. Making sure the safety nets are in
+    place is almost more valuable than making sure the code works as intended.</li>
+    <li class="fragment">Next we will support more languages with a phrasebook, introducing a new type called map</li>
+  </ul>
+</div>
+
+---
+
+# Introducing the Go map hash table
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+// phrasebook holds greeting for each supported language
+var phrasebook = map[language]string{
+    "el": "Χαίρετε Κόσμε",     // Greek
+    "en": "Hello world",       // English
+    "fr": "Bonjour le monde",  // French
+    "he": "שלום עולם",         // Hebrew
+    "ur": "ہیلو دنیا",         // Urdu
+    "vi": "Xin chào Thế Giới", // Vietnamese
+}
+
+// greet says hello to the world in various languages
+func greet(l language) string {
+    greeting, ok := phrasebook[l]
+    if !ok {
+        return fmt.Sprintf("unsupported language: %q", l)
+    }
+
+    return greeting
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+  </ul>
+</div>
+
+---
+
+# Introducing the Go map hash table
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+// greet says hello to the world in various languages
+func greet(l language) string {
+    greeting, ok := phrasebook[l]
+    if !ok {
+        return fmt.Sprintf("unsupported language: %q", l)
+    }
+
+    return greeting
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">Accessing an item in a Go map returns two pieces of valuable information: a value—in our case,
+    the message associated with the key language l—and a Boolean (ok per convention) that tells us whether the key was found</li>
+    <li class="fragment">It’s necessary to check the second return value of the access to the map. If the language were unsupported,
+    we’d receive the zero value of a string, which is the empty string, with no knowledge of whether the map had an entry for our language</li>
+    <li class="fragment"><b>Note that in production-ready code, we would be returning an error because an empty string doesn’t carry any meaning.
+    We are just returning a string for simplicity</b></li>
+  </ul>
+</div>
+
