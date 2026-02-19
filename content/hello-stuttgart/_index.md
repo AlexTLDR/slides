@@ -290,7 +290,7 @@ func greet() string {
   <ul class="responsive-list">
     <li class="fragment">The new function is called greet because it will return the greeting message.
     For now, it takes no parameters and simply returns the message in the form of a string</li>
-    <li class="fragment">TIn the main function, we call the new greet function and store its output in the greeting string
+    <li class="fragment">In the main function, we call the new greet function and store its output in the greeting string
     variable, which we print:
         <div class="fragment">
         {{< highlight go >}}
@@ -302,5 +302,233 @@ func main() {
       </div>
     </li>
     <li class="fragment">Does the test still pass? This is our first refactoring</li>
+  </ul>
+</div>
+
+---
+
+# Testing with the testing package
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Because we’ll want to enrich the greet function, we should be covering it with dedicated tests</li>
+    <li class="fragment">As part of Go’s standard library packages, the package <b>testing</b> is available for use </li>
+    <li class="fragment">We’ve already seen the Example&lt;FunctionName&gt;() syntax, which is used for documentation and for
+    testing standard output. Let’s venture into a new set of test functions: those with the signature:
+      <div style="background-color: #282a36; padding: 15px; border-radius: 8px; border-left: 4px solid #bd93f9; margin: 15px 0; text-align: center;">
+        <code style="color: #f8f8f2; font-size: 1.2em; font-weight: bold;">Test&lt;FunctionName&gt;(t *testing.T)</code>
+      </div>
+    There’s an important difference here with the previous category: these functions accept a parameter—a pointer to a testing.T structure.
+    The reasons for using a pointer here are beyond the scope of this presentation</li>
+  </ul>
+</div>
+
+---
+
+# Testing with the testing package
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">A TestXxx function runs one or more tests on a function, as defined by the developer.
+    We’ll start with one, and then grow from there. A test consists of calling the function and checking its returned
+    value or the state of some variable against a wanted value or state. Should they match, the test is considered passing;
+    otherwise, it’s considered failing. Every test has four main steps:
+    </li>
+    <li class="fragment">Preparation phase—This is where we set up everything we need to run the test—input values,
+    expected outputs, environment variables, global variables, network connections, and so on</li>
+    <li class="fragment">Execution phase—This is where we call the tested function. This step is usually a single line</li>
+    <li class="fragment">Decision phase—This is where we check that the output we got corresponds to the output we want.
+    This might include several comparisons, evaluations, and sometimes some processing, as well as the test failing or passing.</li>
+    <li class="fragment">Teardown phase—This is where we kindly clean back to whatever the state was prior to the test’s execution.
+    This step is made extremely simple thanks to Go’s defer keyword: anything that was altered or created during preparation
+    should be fixed or destroyed here.</li>
+  </ul>
+</div>
+
+---
+
+# Testing with the testing package
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Our TestGreet function will be written in the same main_internal_test.go file as earlier,
+    mostly because the tested function, greet, is also in the same main.go file.</li>
+    <li class="fragment">In Go, we like to use want for the expected value and got for the actual one:
+        <div class="fragment">
+        {{< highlight go >}}
+package main
+
+import "testing"
+
+func TestGreet(t *testing.T) {
+    want := "Hello world"
+
+    got := greet()
+
+    if got != want {
+        // mark this test as failed
+        t.Errorf("expected: %q, got: %q", want, got)
+    }
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">Does the test still pass? This is our first refactoring</li>
+  </ul>
+</div>
+
+---
+
+# Explaining the test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+want := "Hello world"
+
+got := greet()
+
+if got != want {
+    // mark this test as failed
+    t.Errorf("expected: %q, got: %q", want, got)
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">The decision phase here isn’t too tricky. We need to compare two strings, and we’ll accept no alteration,
+    so the '!=' comparison operator works fine for us here. We’ll soon face cases where comparing two strings isn’t enough,
+    but let’s not skip steps, as we still have a final line here that needs more explanation</li>
+  </ul>
+</div>
+
+---
+
+# Explaining the test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+t.Errorf("expected: %q, got: %q", want, got)
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">So far, the need for the t parameter hasn’t been obvious. As mentioned earlier,
+    a test needs to be either PASSing or FAILing.
+    Calling t.Errorf is one way of letting the go test tool know that this test was unsuccessful.
+    Errorf has a similar signature as Printf; see appendix B for more about formatting strings.
+    Once again, you can run the tests with the same go test command as earlier.</li>
+    <li class="fragment">As a challenge, try to make the test fail by changing the expected value (want).</li>
+  </ul>
+</div>
+
+---
+
+# Are you a polyglot?
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Let's first add support for a new language</li>
+    <li class="fragment">Handle the user’s language request</li>
+    <li class="fragment">Adapt the tests and ensure we didn’t break the previous behavior</li>
+  </ul>
+</div>
+
+---
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+        <div class="fragment">
+        {{< highlight go >}}
+package main
+
+import "fmt"
+
+func main() {
+    greeting := greet("en")
+    fmt.Println(greeting)
+}
+
+// language represents the language's code
+type language string
+
+// greet says hello to the world in the specified language
+func greet(l language) string {
+    switch l {
+    case "en":
+        return "Hello world"
+    case "fr":
+        return "Bonjour le monde"
+    default:
+        return ""
+    }
+}
+        {{< /highlight >}}
+      </div>
+  </ul>
+</div>
+
+---
+
+# Explaining the code
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">We need a language parameter for our greet function, and for simplicity, we will use a string</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+type language string
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">Now that we have an explicit type, we can pass it as a parameter to the greet function. The new signature becomes</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+func greet(l language) string
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">To call it, we changed the first line of our main function:</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+greeting := greet("en")
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">We need a language parameter for our greet function, and for simplicity, we will use a string</li>
+  </ul>
+</div>
+
+---
+
+# Explaining the code
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">For the first iteration, we can add a switch on the language and return the corresponding greeting</li>
+    <li class="fragment">The default value for the moment is just an empty string</li>
+    <li class="fragment">Gophers consider that switch is clearer when dealing with most types—the exceptions being error, pointers, and bool</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+switch l {
+    case "en":
+        return "Hello world"
+    case "fr":
+        return "Bonjour le monde"
+    default:
+        return ""
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">Go automatically breaks at the end of every case to prevent errors. Since our code uses return anyway,
+    this doesn't affect us here, but it's a handy feature to remember</li>
   </ul>
 </div>
