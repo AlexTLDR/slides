@@ -685,3 +685,288 @@ func greet(l language) string {
   </ul>
 </div>
 
+---
+
+# An extra on Multiple return values
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Gophers usually see many occurrences of multiple value assignment, mostly in four common cases:
+      <ul>
+        <li class="fragment">When we read the value associated with a key from a map, we also receive whether that key was found in the map, as we did in this piece of code</li>
+        <li class="fragment">When we use the range keyword, which allows us to iterate through all the key-value pairs in a map or all the index-value elements of a slice or array (an example appears in the next version of the test file)</li>
+        <li class="fragment">When we read from a channel with the &lt;- operator, which returns a value and whether the channel is closed</li>
+        <li class="fragment">When we retrieve multiple values returned by a single function, which is the most frequent case, mostly due to Go's handling of errors</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+---
+
+# Writing a table-driven test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Our previous tests were linear—they tested every language in a sequential way. Taking a step back,
+    we realize each test runs the same sequence: take an input language, call the greet function, and check the greeting
+    to see if that language is the expected one. This can be summed up in the following snippet of code that was executed
+    for languages "en", "fr", or "akk" in our previous example</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+got := greet(language(lang))
+if got != want {
+    t.Errorf("expected: %q, got: %q", want, got)
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">There’s no point in duplicating this piece of code every time we want to check that we’re properly supporting a new language.
+    Isn’t the test always going to be the same? Do we really need to add an extra 10 lines to our test file if only 2 of these lines change?
+    This isn’t sustainable. That was our motivation to use maps in the body of the greet function, and this is also our motivation to use maps in our tests!
+    We can make use of table-driven tests to enhance the reusability and clarity of our test file, and get the nice side effect of shrinking it a lot!</li>
+  </ul>
+</div>
+
+---
+
+<div class="responsive-container">
+  <div class="fragment">
+    <div style="max-height: 60vh; overflow-y: auto; overflow-x: hidden; border-radius: 8px;">
+      {{< highlight go >}}
+func TestGreet(t *testing.T) {
+    type testCase struct {
+        lang language
+        want string
+    }
+
+    var tests = map[string]testCase{
+        "English": {
+            lang: "en",
+            want: "Hello world",
+        },
+        "French": {
+            lang: "fr",
+            want: "Bonjour le monde",
+        },
+        "Akkadian, not supported": {
+            lang: "akk",
+            want: `unsupported language: "akk"`,
+        },
+        "Greek": {
+            lang: "el",
+            want: "Χαίρετε Κόσμε",
+        },
+        ...
+        "Empty": {
+            lang: "",
+            want: `unsupported language: ""`,
+        },
+    }
+
+    // range over all the scenarios
+    for name, tc := range tests {
+        t.Run(name, func(t *testing.T) {
+            got := greet(tc.lang)
+
+            if got != tc.want {
+                t.Errorf("expected: %q, got: %q", tc.want, got)
+            }
+        })
+    }
+}
+      {{< /highlight >}}
+    </div>
+  </div>
+</div>
+
+---
+
+# Writing a table-driven test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">As we’ve seen previously, every test we want to run needs two values: the language of the desired message
+    and the expected greeting message that will be returned by the greet function. For this, we introduce a new structure
+    that contains the input language, and the expected greeting</li>
+    <li class="fragment">Structures are Go’s way of aggregating data types together in a meaningful entity. In our case,
+    because the structure represents a test case, we’ll name it testCase. Our structure needs only to be accessible in the
+    TestGreet function (and nowhere else), so it is defined within the TestGreet function</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+type testCase struct {
+    lang language
+    want string
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">This will make writing a test over a pair of "language, greeting" even simpler.</li>
+  </ul>
+</div>
+
+---
+
+# Writing a table-driven test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Now that we can easily write one test case, let’s see how to write a lot of them</li>
+    <li class="fragment">In Go, the common way of writing a list of test cases is to use a map structure that will refer to each test case with a specific description key</li>
+    <li class="fragment">The description should be explicit about what this case tests</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+var tests = map[string]testCase{
+    "English": {
+        lang: "en",
+        want: "Hello world",
+    },
+    "French": {
+        lang: "fr",
+        want: "Bonjour le monde",
+    },
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">This will make writing a test over a pair of language and greeting even simpler.</li>
+  </ul>
+</div>
+
+---
+
+# Writing a table-driven test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">To test these scenarios, we can iterate over the tests map and run each test case sequentially</li>
+    <li class="fragment">This for + range syntax returns the key and the value of each element of the map</li>
+    <li class="fragment">We then pass the name as the first parameter to Run, a method from the testing package that makes
+    tests so much easier to use: if a test case fails, the tool will give you its name so that you can find it and fix it</li>
+    <li class="fragment">To test these scenarios, we can iterate over the tests map and run each test case sequentially</li>
+    <li class="fragment">Most code editors also let you run one single test case if you use this syntax</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+ for name, tc := range tests {
+ t.Run(name, func(t *testing.T) {
+     got := greet(tc.language)
+     if got != tc.want {
+         t.Errorf("expected: %q, got: %q", tc.want, got)
+     }
+  })
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+  </ul>
+</div>
+
+---
+
+# Writing a table-driven test
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Because the call to the greet function is the same regardless of the input language,
+    creating a new test case only has us adding an entry in the tests map</li>
+    <li class="fragment">This can be seen in the following listing</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+ var tests = map[string]testCase{
+   "English": {...},
+   "French": {...},
+   "Akkadian, not supported": {
+       lang: "akk",
+       want: `unsupported language: "akk"`,
+   },
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+  </ul>
+</div>
+
+---
+
+# Using the flag package to read the user’s language
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">Right now, changing the language requires changing the code. To fix this, we will let the user
+    pass their language choice directly through the command line when they run the program</li>
+    <li class="fragment">Go has two ways to read command-line arguments: the os package (manual, tedious, and requires custom parsing)
+    and the flag package (automatic, handles formats, and converts data types for you). We will use flag</li>
+    <li class="fragment">The first thing we need to do, when it comes to exposing a parameter on our command-line executable,
+    is to give it a nice, short name. Here, we’ll offer the user a choice of language, which makes lang a fairly obvious choice</li>
+  </ul>
+</div>
+
+---
+
+<div class="responsive-container">
+  <div class="fragment">
+    <div style="max-height: 60vh; overflow-y: auto; overflow-x: hidden; border-radius: 8px;">
+      {{< highlight go >}}
+package main
+
+import (
+    "flag"
+    "fmt"
+)
+
+func main() {
+    var lang string
+	flag.StringVar(&lang,
+        "lang",
+        "en",
+        "The required language, e.g. en, ur...")
+    flag.Parse()
+
+    greeting := greet(language(lang))
+    fmt.Println(greeting)
+}
+
+// language represents a language
+type language string
+
+// phrasebook holds greeting for each supported language
+var phrasebook = map[language]string{
+    ...
+}
+
+// greet says hello to the world
+func greet(l language) string {
+    ...
+}
+      {{< /highlight >}}
+    </div>
+  </div>
+</div>
+
+---
+
+# Test the command-line interface
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">We’ve now completed the code, and it’s time to run some end-user testing</li>
+    <li class="fragment">For this, we’ll simulate calls from the command line</li>
+    <li class="fragment">We can pass the parameter on the command line with go run main.go -lang=en</li>
+    <li class="fragment">
+        <div class="fragment">
+        {{< highlight go >}}
+❯ go run main.go -lang=el
+Χαίρετε Κόσμε
+        {{< /highlight >}}
+      </div>
+    </li>
+  </ul>
+</div>
+
+# Q & A
+
