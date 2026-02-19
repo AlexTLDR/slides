@@ -222,7 +222,8 @@ import "testing"
 
 func ExampleHello() {
     Hello()
-    // Output: Hello world
+    // Output:
+    // Hello world
 }
         {{< /highlight >}}
       </div>
@@ -282,3 +283,24 @@ func greet() string {
 </div>
 
 ---
+
+# Functions
+
+<div class="responsive-container">
+  <ul class="responsive-list">
+    <li class="fragment">The new function is called greet because it will return the greeting message.
+    For now, it takes no parameters and simply returns the message in the form of a string</li>
+    <li class="fragment">TIn the main function, we call the new greet function and store its output in the greeting string
+    variable, which we print:
+        <div class="fragment">
+        {{< highlight go >}}
+func main() {
+    greeting := greet()
+        fmt.Println(greeting)
+}
+        {{< /highlight >}}
+      </div>
+    </li>
+    <li class="fragment">Does the test still pass? This is our first refactoring</li>
+  </ul>
+</div>

@@ -98,11 +98,19 @@
   border-radius: 6px;
   margin: 0.5em 0;
   padding: 1em;
-  overflow: auto;
+  overflow: visible !important;
   width: 100%;
   font-family: 'Fira Code', 'Roboto Mono', 'Source Code Pro', monospace;
   font-size: calc(0.7em + 0.4vmin);
   line-height: 1.5;
+  max-height: none !important;
+}
+
+.reveal pre code {
+  overflow: visible !important;
+  max-height: none !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word;
 }
 
 .reveal code {
