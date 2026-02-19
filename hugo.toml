@@ -3,6 +3,12 @@ languageCode = 'en-us'
 title = 'AlexTLDR Presentations'
 theme = ["github.com/joshed-io/reveal-hugo"]
 
+[Author]
+name = "AlexTLDR"
+
+[server]
+port = 1313
+
 [markup.goldmark.renderer]
 unsafe = true
 
@@ -20,6 +26,10 @@ tabWidth = 2
 baseName = "index"
 mediaType = "text/html"
 isHTML = true
+[params]
+[params.author]
+name = "AlexTLDR"
+
 [params.logo]
 src = "./img/stuttgart_gophers.png"
 alt = "Stuttgart Gophers Logo"
